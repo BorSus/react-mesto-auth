@@ -1,7 +1,10 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { BrowserRouter, Routes, Route, Switch } from 'react-router-dom';
 import '../index.css';
 import Header from './Header';
 import Main from './Main';
+import Login from './Login';
+import Register from './Register ';
 import Footer from './Footer';
 import PopupWithForm from './PopupWithForm';
 import EditProfilePopup from './EditProfilePopup';
@@ -13,6 +16,8 @@ import { FormValidator } from '../utils/FormValidator.js';
 import { CurrentUserContext } from '../contexts/CurrentUserContext.js';
 
 function App() {
+  //переменная состояния = имя ссылки в header
+  const [headerLink, setHeaderLink] = useState('Войти');
   //переменная состояния = данные пользователя
   const [currentUser, setСurrentUser] = useState({});
   //переменная состояния = данные карточки с сервера
@@ -217,16 +222,44 @@ function App() {
 */
   return (
     <CurrentUserContext.Provider value={currentUser}>
-      <Header />
-      <Main
-        cards={cards}
-        onEditAvatar={handleEditAvatarClick}
-        onEditProfile={handleEditProfileClick}
-        onAddPlace={handleAddPlaceClick}
-        onCardClick={handleCardClick}
-        onIconDeleteClick={handleDeleteIconClick}
-        onCardLike={handleCardLike}
-      />
+      <Header headerLink={headerLink} />
+      <Routes>
+        <Route
+          path="/react-mesto-auth"
+          element={
+            <Main
+              cards={cards}
+              onEditAvatar={handleEditAvatarClick}
+              onEditProfile={handleEditProfileClick}
+              onAddPlace={handleAddPlaceClick}
+              onCardClick={handleCardClick}
+              onIconDeleteClick={handleDeleteIconClick}
+              onCardLike={handleCardLike}
+            />
+          }
+        />
+        <Route path="react-mesto-auth/sign-in" element={<Login />} />
+        <Route path="react-mesto-auth/sign-up" element={<Register />} />
+      </Routes>
+      {/* 
+       <Routes>
+        <Route
+          path="/"
+          element={
+            <Main
+              cards={cards}
+              onEditAvatar={handleEditAvatarClick}
+              onEditProfile={handleEditProfileClick}
+              onAddPlace={handleAddPlaceClick}
+              onCardClick={handleCardClick}
+              onIconDeleteClick={handleDeleteIconClick}
+              onCardLike={handleCardLike}
+            />
+          }
+        />
+        
+      </Routes>
+        */}
       <Footer />
       {/* === Popup редактирование профиля ===*/}
       <EditProfilePopup
@@ -236,6 +269,7 @@ function App() {
         isLoad={isLoad}
         handleOverlayPopupClick={closePopupOnOverlayClick}
       />
+
       {/* === Popup редактирование аватара ===*/}
       <EditAvatarPopup
         isOpen={isEditAvatarPopupOpen}

@@ -4,6 +4,8 @@
   width: 68.75%;
   min-height: 74px;
   margin: 42px auto 0px;
+  display: flex;
+  justify-content: space-between;
 }
 @media screen and (max-width: 450px) {
   .header {

@@ -1,6 +1,6 @@
-# Проект: Путешествие по России
+# Проект: Место
 
-- [Ссылка на GitHUB] (https://borsus.github.io/mesto-react/)
+- [Ссылка на GitHUB] (https://borsus.github.io/react-mesto-auth/)
 
 ## Описание проекта:
 

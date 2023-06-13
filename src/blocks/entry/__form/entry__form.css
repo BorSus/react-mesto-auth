@@ -1,0 +1,10 @@
+.entry__form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  row-gap: 3px;
+  box-sizing: border-box;
+  padding: 0px;
+  margin: 0px;
+}
