@@ -11,7 +11,6 @@ function AddPlacePopup({ isOpen, onClose, onAddPlace, isLoad, handleOverlayPopup
     setName(''); //в котором содержится значение inputPlacename
     setLink(''); //в котором содержится значение inputImageLink
   }, [isOpen]);
-
   // Обработчик изменения инпута обновляет стейт name
   function handleChangeName(e) {
     setName(e.target.value);

@@ -15,7 +15,6 @@ function EditProfilePopup({ isOpen, onClose, onUpdateUser, isLoad, handleOverlay
     setName(currentUser.name);
     setDescription(currentUser.about);
   }, [currentUser, isOpen]);
-
   // Обработчик изменения инпута обновляет стейт name
   function handleChangeName(e) {
     setName(e.target.value);

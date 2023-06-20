@@ -8,3 +8,8 @@
   text-align: center;
   color: #ffffff;
 }
+@media screen and (max-width: 450px) {
+  .entry__title {
+    margin: 40px auto;
+  }
+}

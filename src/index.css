@@ -64,8 +64,10 @@
 @import url(./blocks/popup/__caption/popup__caption.css);
 @import url(./blocks/popup/__error/popup__error.css);
 @import url(./blocks/popup/__error/_active/popup__error_active.css);
+@import url(./blocks/popup/__icon/popup__icon.css);
+@import url(./blocks/popup/__infoTooltip/popup__infoTooltip.css);
 
-/*========import styles login======*/
+/*========import styles entry======*/
 @import url(./blocks/entry/entry.css);
 @import url(./blocks/entry/__title/entry__title.css);
 @import url(./blocks/entry/__form/entry__form.css);
@@ -78,3 +80,15 @@
 @import url(./blocks/entry/__submit/_type/entry__submit_type_disabled.css);
 @import url(./blocks/entry/__submit/_type/entry__submit_type_loading.css);
 @import url(./blocks/entry/__link/entry__link.css);
+
+/*========import styles navbar======*/
+@import url(./blocks/navbar/navbar.css);
+@import url(./blocks/navbar/__link/navbar__link.css);
+@import url(./blocks/navbar/__info/navbar__info.css);
+@import url(./blocks/navbar/__mobile-icon/navbar__mobile-icon.css);
+
+/*========import styles mobile-menu======*/
+@import url(./blocks/mobile-menu/mobile-menu.css);
+@import url(./blocks/mobile-menu/__link/mobile-menu__link.css);
+@import url(./blocks/mobile-menu/__info/mobile-menu__info.css);
+@import url(./blocks/mobile-menu/_active/mobile-menu_active.css);

@@ -6,16 +6,18 @@ function Card({ card, onCardClick, onIconDeleteClick, onCardLike }) {
   const currentUser = React.useContext(CurrentUserContext);
   //проверяем, наша ли эта карточка
   const ownerIsUser = currentUser._id === card.owner._id;
-  console.log(card);
+  //console.log(card);
   //проверяем, есть ли уже лайк на этой карточке
   const isLikedCard = card.likes.some(like => like._id === currentUser._id);
-
+  //Функция открыть Popup изображения
   function handleClick() {
     onCardClick(card);
   }
+  //Функция поставить|убрать like
   function handleCardLike() {
     onCardLike(card);
   }
+  //Функция открыть удаления карточки
   function handleIconDeleteClick() {
     onIconDeleteClick(card);
   }
@@ -34,7 +36,6 @@ function Card({ card, onCardClick, onIconDeleteClick, onCardLike }) {
           <button
             onClick={handleCardLike}
             type="button"
-            //className={className}
             className={`element__like ${isLikedCard && `element__like_active`}`}
             aria-label="Нравится"
           ></button>

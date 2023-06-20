@@ -13,6 +13,7 @@ export const optionsApi = {
     authorization: '75e10885-ab4a-4ce4-a42e-f0872951e9bf',
     'Content-Type': 'application/json'
   },
+
   newCards: [
     {
       name: 'Санкт-Петербург',
@@ -29,8 +30,7 @@ export const optionsApi = {
     {
       name: 'Казань',
       link: 'https://vskali.ru/wp-content/uploads/2021/03/d152aa29d49346fce0eb8da66b7c4d98-2.jpg'
-    }
-    /*
+    },
     {
       name: 'Нижний Новгород',
       link: 'https://vskali.ru/wp-content/uploads/2021/03/c65dab66e1005c237a057114b65a11c4-2.jpg'
@@ -42,7 +42,8 @@ export const optionsApi = {
     {
       name: 'Владимир',
       link: 'https://vskali.ru/wp-content/uploads/2021/03/05d89718e98565e3b81e1afabe51343f-2.jpg'
-    },
+    } /*,
+    
     {
       name: 'Калининград',
       link: 'https://vskali.ru/wp-content/uploads/2021/03/602547f34e5ce40182ae696272c0b483-2.jpg'
@@ -76,6 +77,17 @@ export const optionsApi = {
       link: 'https://vskali.ru/wp-content/uploads/2021/03/9f0976b13a5bdcb18f26bf7af5d330d3-2.jpg'
     }*/
   ]
+};
+
+export const optionsApiAuthentication = {
+  //Адрес сервера аутентификации
+  baseUrl: `https://auth.nomoreparties.co`,
+  //Эндпоинт для идентификации
+  urlSignup: `/signup`,
+  //Эндпоинт для аутентификации
+  urlSignin: `/signin`,
+  //Эндпоинт для авторизации
+  urlAuthorise: `/users/me`
 };
 export const configurationValidator = {
   formSelector: '.popup__form',

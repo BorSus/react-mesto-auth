@@ -1,10 +1,32 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
-function EntryForm({ title, textSubmitButton, textLink }) {
+function EntryForm({ title, textSubmitButton, textLink, onSubmit }) {
+  const location = useLocation();
+  //переменная состояния = cтейт, в котором содержится значение inputEntryEmail
+  const [email, setEmail] = useState('');
+  //переменная состояния = cтейт, в котором содержится значение inputEntryPassword
+  const [password, setPassword] = useState('');
+  // Обработчик изменения инпута обновляет стейт name
+  function handleChangeEmail(e) {
+    setEmail(e.target.value);
+  }
+  // Обработчик изменения инпута обновляет стейт description
+  function handleChangePassword(e) {
+    setPassword(e.target.value);
+  }
+  //Функция для submit формы EntryForm.
+  function handleSubmit(e) {
+    e.preventDefault();
+    onSubmit({
+      password,
+      email
+    });
+  }
   return (
     <section className="entry">
       <p className="entry__title">{title}</p>
-      <form name="entryForm" className="entry__form">
+      <form name="entryForm" className="entry__form" onSubmit={handleSubmit}>
         <div className="entry__valid-input">
           <input
             type="email"
@@ -15,6 +37,7 @@ function EntryForm({ title, textSubmitButton, textLink }) {
             minLength="3"
             maxLength="64"
             required
+            onChange={handleChangeEmail}
           />
           <span className="entry__error" id="inputEntryEmail-error">
             &nbsp
@@ -27,9 +50,10 @@ function EntryForm({ title, textSubmitButton, textLink }) {
             name="password"
             id="inputEntryPassword"
             placeholder="Пароль"
-            minLength="8"
+            minLength="3"
             maxLength="64"
             required
+            onChange={handleChangePassword}
           />
           <span className="entry__error" id="inputEntryPassword-error">
             &nbsp
@@ -38,8 +62,12 @@ function EntryForm({ title, textSubmitButton, textLink }) {
         <button className="entry__submit" type="submit">
           {textSubmitButton}
         </button>
+        {location.pathname === '/sign-up' && (
+          <Link to="/sign-in" className="entry__link">
+            {textLink}
+          </Link>
+        )}
       </form>
-      <p className="entry__link">{textLink}</p>
     </section>
   );
 }

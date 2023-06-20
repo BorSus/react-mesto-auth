@@ -1,23 +1,26 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { BrowserRouter, Routes, Route, Switch } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import '../index.css';
 import Header from './Header';
 import Main from './Main';
 import Login from './Login';
-import Register from './Register ';
+import Register from './Register';
 import Footer from './Footer';
 import PopupWithForm from './PopupWithForm';
 import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
 import ImagePopup from './ImagePopup';
+import InfoTooltip from './InfoTooltip';
+import ProtectedRoute from './ProtectedRoute';
 import { api } from '../utils/Api.js';
+import { apiAuthentication } from '../utils/ApiAuthentication';
 import { FormValidator } from '../utils/FormValidator.js';
 import { CurrentUserContext } from '../contexts/CurrentUserContext.js';
 
 function App() {
-  //переменная состояния = имя ссылки в header
-  const [headerLink, setHeaderLink] = useState('Войти');
+  //переменная состояния = авторизированный пользователь
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   //переменная состояния = данные пользователя
   const [currentUser, setСurrentUser] = useState({});
   //переменная состояния = данные карточки с сервера
@@ -30,19 +33,63 @@ function App() {
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
   //переменная состояния = Статус ConfirmPopup
   const [isConfirmPopupOpen, setIsConfirmPopupOpen] = useState(false);
+  //переменная состояния = Статус RegistrationPopup
+  const [isRegistrationPopupOpen, setRegistrationPopupOpen] = useState(null);
+  //переменная состояния = Статус успеха регистрации
+  const [isFailRegistration, setIsFailRegistration] = useState(true);
   //переменная состояния = Статус selectedCard
   const [selectedCard, setSelectedCard] = useState({});
   //переменная состояния = Статус deletedCard
   const [deletedCard, setDeletedCard] = useState({});
   //переменная состояния = Статус загрузки на сервер
   const [isLoad, setIsLoad] = useState(false);
+  //переменная состояния = email пользователя
+  const [email, setEmail] = useState('');
+  const navigate = useNavigate();
   //переменная функции колбек содержит логику закрытия попапа клавишей Esc
   const closeByEscape = useCallback(evt => {
     if (evt.key === 'Escape') {
       closeAllPopups();
     }
   }, []);
-
+  //переменная  открыт ли какой-либо popup
+  const isOpenAnyPopup =
+    isEditProfilePopupOpen ||
+    isRegistrationPopupOpen ||
+    isAddPlacePopupOpen ||
+    isEditAvatarPopupOpen ||
+    isConfirmPopupOpen ||
+    selectedCard.name;
+  //Функция проверки корректности токена
+  async function checkToken() {
+    try {
+      const jwt = localStorage.getItem('jwt');
+      //console.log(jwt);
+      const response = await apiAuthentication.getUserInfo(jwt);
+      if (!response) {
+        return;
+      }
+      setIsLoggedIn(true);
+      setEmail(response.data.email);
+      console.log(response.data.email);
+    } catch (error) {
+      console.error(`Ошибка при проверки корректности токена: ${error}`);
+    } finally {
+      console.info('Проверки корректности токена-завершено');
+    }
+  }
+  //Проверка токена при загрузке
+  useEffect(() => {
+    checkToken();
+  }, []);
+  //Перенаправление на main
+  useEffect(() => {
+    navigate('/main');
+  }, [isLoggedIn]);
+  //Функция выйти в NavigateBar
+  function handleExit() {
+    setIsLoggedIn(false);
+  }
   //Функция открыть popupFullImg.
   function handleCardClick(card) {
     setSelectedCard(card);
@@ -69,12 +116,12 @@ function App() {
     setIsConfirmPopupOpen(true);
   }
   //Функция закрытие всех попапов
-
   function closeAllPopups() {
     setIsEditProfilePopupOpen(false);
     setIsAddPlacePopupOpen(false);
     setIsEditAvatarPopupOpen(false);
     setIsConfirmPopupOpen(false);
+    setRegistrationPopupOpen(false);
     setSelectedCard({});
     setDeletedCard({});
   }
@@ -85,14 +132,7 @@ function App() {
     }
   }
 
-  //переменная  открыт ли какой-либо popup
-  const isOpenAnyPopup =
-    setIsEditProfilePopupOpen ||
-    setIsAddPlacePopupOpen ||
-    setIsEditAvatarPopupOpen ||
-    setIsConfirmPopupOpen ||
-    setSelectedCard.name;
-  //На первой итерации он добавляем обработчик события нажатия клавиши Escape на документ только в том случае, если попап открыт
+  //Добавляем обработчик события нажатия клавиши Escape на документ только в том случае, если попап открыт
   useEffect(() => {
     if (isOpenAnyPopup) {
       document.addEventListener('keydown', closeByEscape);
@@ -173,7 +213,6 @@ function App() {
       console.info('Редактирование аватара пользователя-завершено');
     }
   }
-
   //Функция для submit формы PopupWithConfirmation.удаления карточки, обновить стейт Cards  и закрыть все модальные окна
   async function handleConfirmDeleteCard(e) {
     try {
@@ -190,7 +229,39 @@ function App() {
       console.info(`Удаление карточки-завершено`);
     }
   }
-
+  //Функция для submit формы EntryForm.Регистрация нового пользователя на сервере,обновить стейт FailRegistration, перейти на страницу Входа
+  async function handleSubmitRegistration(newUser) {
+    try {
+      const response = await apiAuthentication.postNewUser(newUser);
+      console.log(response);
+      setIsFailRegistration(false);
+      navigate('/sign-in');
+    } catch (error) {
+      setIsFailRegistration(true);
+      console.error(`Ошибка при регистрации нового пользователя: ${error}`);
+    } finally {
+      setRegistrationPopupOpen(true);
+      console.info('Регистрация нового пользователя-завершено');
+    }
+  }
+  //Функция для submit формы EntryForm.Вход пользователя ,обновить стейт FailRegistration,IsLoggedIn
+  async function handleSubmitLogin(account) {
+    try {
+      const response = await apiAuthentication.postLoginUser(account);
+      console.log(response);
+      setIsFailRegistration(false);
+      localStorage.setItem('jwt', response.token);
+      setIsLoggedIn(true);
+      setEmail(account.email);
+    } catch (error) {
+      setRegistrationPopupOpen(true);
+      setIsFailRegistration(true);
+      console.error(`Ошибка при запросе токена пользователя: ${error}`);
+    } finally {
+      console.info('Запросе токена пользователя-завершено');
+    }
+  }
+  //Добавление валидации
   const [formValidatorList, setFormValidatorList] = useState({});
   useEffect(() => {
     const arrayPopupForm = Array.from(document.querySelectorAll('.popup__form'));
@@ -204,62 +275,36 @@ function App() {
     setFormValidatorList(validators);
   }, []);
   //console.log(formValidatorList);
-  /*
-  //Добавление карточек на сервер
-  useEffect(() => {
-    const asyncFn = async () => {
-      try {
-        const response = await api.postCards();
-        console.info(response);
-      } catch (error) {
-        console.error(`Ошибка при добавлении карточек на  сервер: ${error}`);
-      } finally {
-        console.info(`Добавление карточек на сервер-завершено`);
-      }
-    };
-    asyncFn();
-  }, []);
-*/
   return (
     <CurrentUserContext.Provider value={currentUser}>
-      <Header headerLink={headerLink} />
+      <Header email={email} onExit={handleExit} />
       <Routes>
         <Route
-          path="/react-mesto-auth"
+          path="/main"
           element={
-            <Main
-              cards={cards}
-              onEditAvatar={handleEditAvatarClick}
-              onEditProfile={handleEditProfileClick}
-              onAddPlace={handleAddPlaceClick}
-              onCardClick={handleCardClick}
-              onIconDeleteClick={handleDeleteIconClick}
-              onCardLike={handleCardLike}
+            <ProtectedRoute
+              isLoggedIn={isLoggedIn}
+              element={
+                <Main
+                  cards={cards}
+                  onEditAvatar={handleEditAvatarClick}
+                  onEditProfile={handleEditProfileClick}
+                  onAddPlace={handleAddPlaceClick}
+                  onCardClick={handleCardClick}
+                  onIconDeleteClick={handleDeleteIconClick}
+                  onCardLike={handleCardLike}
+                />
+              }
             />
           }
         />
-        <Route path="react-mesto-auth/sign-in" element={<Login />} />
-        <Route path="react-mesto-auth/sign-up" element={<Register />} />
-      </Routes>
-      {/* 
-       <Routes>
+        <Route path="/sign-in" element={<Login onSubmit={handleSubmitLogin} />} />
+        <Route path="/sign-up" element={<Register onSubmit={handleSubmitRegistration} />} />
         <Route
           path="/"
-          element={
-            <Main
-              cards={cards}
-              onEditAvatar={handleEditAvatarClick}
-              onEditProfile={handleEditProfileClick}
-              onAddPlace={handleAddPlaceClick}
-              onCardClick={handleCardClick}
-              onIconDeleteClick={handleDeleteIconClick}
-              onCardLike={handleCardLike}
-            />
-          }
+          element={isLoggedIn ? <Navigate to="/main" /> : <Navigate to="/sign-in" />}
         />
-        
       </Routes>
-        */}
       <Footer />
       {/* === Popup редактирование профиля ===*/}
       <EditProfilePopup
@@ -269,7 +314,6 @@ function App() {
         isLoad={isLoad}
         handleOverlayPopupClick={closePopupOnOverlayClick}
       />
-
       {/* === Popup редактирование аватара ===*/}
       <EditAvatarPopup
         isOpen={isEditAvatarPopupOpen}
@@ -297,13 +341,36 @@ function App() {
         onSubmit={handleConfirmDeleteCard}
         handleOverlayPopupClick={closePopupOnOverlayClick}
       ></PopupWithForm>
-
+      {/* === Popup увеличенной картинки карточки ===*/}
       <ImagePopup
         card={selectedCard}
         onClose={closeAllPopups}
         handleOverlayPopupClick={closePopupOnOverlayClick}
       />
+      <InfoTooltip
+        namePopup="popupRegistration"
+        isOpen={isRegistrationPopupOpen}
+        onClose={closeAllPopups}
+        handleOverlayPopupClick={closePopupOnOverlayClick}
+        isFailRegistration={isFailRegistration}
+      />
     </CurrentUserContext.Provider>
   );
 }
 export default App;
+/*
+  //Добавление карточек на сервер
+  useEffect(() => {
+    const asyncFn = async () => {
+      try {
+        const response = await api.postCards();
+        console.info(response);
+      } catch (error) {
+        console.error(`Ошибка при добавлении карточек на  сервер: ${error}`);
+      } finally {
+        console.info(`Добавление карточек на сервер-завершено`);
+      }
+    };
+    asyncFn();
+  }, []);
+*/

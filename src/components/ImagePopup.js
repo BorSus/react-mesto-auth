@@ -1,3 +1,4 @@
+/* === Popup изображения ===*/
 import React from 'react';
 function ImagePopup({ card, onClose, handleOverlayPopupClick }) {
   return (

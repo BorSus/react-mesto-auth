@@ -38,7 +38,6 @@ function Main({
           onClick={onAddPlace}
         ></button>
       </section>
-
       <section className="elements">
         {cards.map(cardItem => (
           <Card
