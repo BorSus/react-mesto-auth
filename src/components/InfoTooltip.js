@@ -6,7 +6,8 @@ function InfoTooltip({
   isOpen,
   isFailRegistration,
   onClose,
-  onHandleOverlayPopupClick
+  onHandleOverlayPopupClick,
+  registrationText
 }) {
   return (
     <div
@@ -22,11 +23,7 @@ function InfoTooltip({
             alt={isFailRegistration ? 'ошибка при регистрации' : 'регистрация успешна'}
             className="popup__icon"
           />
-          <h2 className="popup__title">
-            {isFailRegistration
-              ? `Что-то пошло не так! Попробуйте ещё раз.`
-              : `Вы успешно зарегистрировались!`}
-          </h2>
+          <h2 className="popup__title">{registrationText}</h2>
           <button
             className="popup__close"
             aria-label="Закрыть"

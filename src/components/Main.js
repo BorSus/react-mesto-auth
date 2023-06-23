@@ -13,6 +13,7 @@ function Main({
 }) {
   //Подписка на контекст данные пользователя
   const currentUser = useContext(CurrentUserContext);
+
   return (
     <main className="content">
       <section className="profile">

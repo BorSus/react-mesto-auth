@@ -36,7 +36,9 @@ function App() {
   //переменная состояния = Статус RegistrationPopup
   const [isRegistrationPopupOpen, setRegistrationPopupOpen] = useState(null);
   //переменная состояния = Статус успеха регистрации
-  const [isFailRegistration, setIsFailRegistration] = useState(true);
+  const [isFailRegistration, setIsFailRegistration] = useState(null);
+  //переменная состояния = текст для infoTooltip
+  const [registrationText, setRegistrationText] = useState(null);
   //переменная состояния = Статус selectedCard
   const [selectedCard, setSelectedCard] = useState({});
   //переменная состояния = Статус deletedCard
@@ -64,7 +66,6 @@ function App() {
   async function checkToken() {
     try {
       const jwt = localStorage.getItem('jwt');
-      //console.log(jwt);
       const response = await apiAuthentication.getUserInfo(jwt);
       if (!response) {
         return;
@@ -86,9 +87,11 @@ function App() {
   useEffect(() => {
     navigate('/main');
   }, [isLoggedIn]);
-  //Функция выйти в NavigateBar
+  //Функция выйти из аккаунта - удалить токен из локального хранилища,обновить стейт IsLoggedIn, перейти на страницу входа
   function handleExit() {
     setIsLoggedIn(false);
+    localStorage.removeItem('jwt');
+    navigate('/sign-in');
   }
   //Функция открыть popupFullImg.
   function handleCardClick(card) {
@@ -131,7 +134,6 @@ function App() {
       closeAllPopups();
     }
   }
-
   //Добавляем обработчик события нажатия клавиши Escape на документ только в том случае, если попап открыт
   useEffect(() => {
     if (isOpenAnyPopup) {
@@ -143,18 +145,20 @@ function App() {
   }, [isOpenAnyPopup, closeByEscape]);
   //Получение данных о пользователе и карточек с сервера, обновить стейт cards и сurrentUser
   useEffect(() => {
-    Promise.all([api.getUserInfo(), api.getInitialCards()])
-      .then(([userInfo, cards]) => {
-        setСurrentUser(userInfo);
-        setCards(cards);
-      })
-      .catch(error => {
-        console.error(`Ошибка при добавлении данных сервера: ${error}`);
-      })
-      .finally(() => {
-        console.info('Добавление данных с сервера-завершено');
-      });
-  }, []);
+    if (isLoggedIn) {
+      Promise.all([api.getUserInfo(), api.getInitialCards()])
+        .then(([userInfo, cards]) => {
+          setСurrentUser(userInfo);
+          setCards(cards);
+        })
+        .catch(error => {
+          console.error(`Ошибка при добавлении данных сервера: ${error}`);
+        })
+        .finally(() => {
+          console.info('Добавление данных с сервера-завершено');
+        });
+    }
+  }, [isLoggedIn]);
   //Функция поставить||удалить like, обновить стейт cards
   async function handleCardLike(card) {
     try {
@@ -232,12 +236,13 @@ function App() {
   //Функция для submit формы EntryForm.Регистрация нового пользователя на сервере,обновить стейт FailRegistration, перейти на страницу Входа
   async function handleSubmitRegistration(newUser) {
     try {
-      const response = await apiAuthentication.postNewUser(newUser);
-      console.log(response);
+      await apiAuthentication.postNewUser(newUser);
+      setRegistrationText('Вы успешно зарегистрировались!');
       setIsFailRegistration(false);
       navigate('/sign-in');
     } catch (error) {
       setIsFailRegistration(true);
+      setRegistrationText('Что-то пошло не так! Попробуйте ещё раз.');
       console.error(`Ошибка при регистрации нового пользователя: ${error}`);
     } finally {
       setRegistrationPopupOpen(true);
@@ -248,7 +253,6 @@ function App() {
   async function handleSubmitLogin(account) {
     try {
       const response = await apiAuthentication.postLoginUser(account);
-      console.log(response);
       setIsFailRegistration(false);
       localStorage.setItem('jwt', response.token);
       setIsLoggedIn(true);
@@ -256,6 +260,7 @@ function App() {
     } catch (error) {
       setRegistrationPopupOpen(true);
       setIsFailRegistration(true);
+      setRegistrationText('Что-то пошло не так! Попробуйте ещё раз.');
       console.error(`Ошибка при запросе токена пользователя: ${error}`);
     } finally {
       console.info('Запросе токена пользователя-завершено');
@@ -275,6 +280,7 @@ function App() {
     setFormValidatorList(validators);
   }, []);
   //console.log(formValidatorList);
+
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <Header email={email} onExit={handleExit} />
@@ -353,6 +359,7 @@ function App() {
         onClose={closeAllPopups}
         handleOverlayPopupClick={closePopupOnOverlayClick}
         isFailRegistration={isFailRegistration}
+        registrationText={registrationText}
       />
     </CurrentUserContext.Provider>
   );

@@ -42,18 +42,3 @@ function Header({ email, onExit }) {
   );
 }
 export default Header;
-
-//Функция отслеживает размер экрана
-/*
-  function handleResize(event) {
-    const width = event.target.innerWidth;
-    console.log(width);
-    if (width <= 550) {
-      setIsMobileVersion(true);
-    } else {
-      setIsMobileVersion(false);
-    }
-    console.log(isMobileVersion);
-  }
-  window.addEventListener('resize', handleResize);
- */
