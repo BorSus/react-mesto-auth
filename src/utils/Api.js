@@ -19,6 +19,7 @@ class Api {
   //Загрузка карточек с сервера
   async getInitialCards() {
     const response = await fetch(`${this._baseUrl}${this._urlCards}`, {
+      credentials: 'include',
       headers: this._headers
     });
     return this._getResponseData(response);
@@ -27,6 +28,7 @@ class Api {
   //Загрузка информации о пользователе с сервера
   async getUserInfo() {
     const response = await fetch(`${this._baseUrl}${this._urlUser}`, {
+      credentials: 'include',
       headers: this._headers
     });
     return this._getResponseData(response);
@@ -35,6 +37,7 @@ class Api {
   async patchUserInfo(data) {
     const response = await fetch(`${this._baseUrl}${this._urlUser}`, {
       method: 'PATCH',
+      credentials: 'include',
       headers: this._headers,
       body: JSON.stringify({
         name: data.name,
@@ -47,6 +50,7 @@ class Api {
   async patchUserAvatar(data) {
     const response = await fetch(`${this._baseUrl}${this._urlAvatar}`, {
       method: 'PATCH',
+      credentials: 'include',
       headers: this._headers,
       body: JSON.stringify({
         avatar: data.avatar
@@ -58,6 +62,7 @@ class Api {
   async postNewCard(data) {
     const response = await fetch(`${this._baseUrl}${this._urlCards}`, {
       method: 'POST',
+      credentials: 'include',
       headers: this._headers,
       body: JSON.stringify({
         name: data.name,
@@ -70,6 +75,7 @@ class Api {
   async deleteCard(cardId) {
     const response = await fetch(`${this._baseUrl}${this._urlCards}/${cardId}`, {
       method: 'DELETE',
+      credentials: 'include',
       headers: this._headers
     });
     return this._getResponseData(response);
@@ -79,6 +85,7 @@ class Api {
   async putLike(cardId) {
     const response = await fetch(`${this._baseUrl}${this._urlCards}/${cardId}/likes`, {
       method: 'PUT',
+      credentials: 'include',
       headers: this._headers
     });
     return this._getResponseData(response);
@@ -87,6 +94,7 @@ class Api {
   async deleteLike(cardId) {
     const response = await fetch(`${this._baseUrl}${this._urlCards}/${cardId}/likes`, {
       method: 'DELETE',
+      credentials: 'include',
       headers: this._headers
     });
     return this._getResponseData(response);
@@ -98,13 +106,6 @@ class Api {
     } else {
       return this.deleteLike(cardId);
     }
-  }
-
-  //Добавление карточек на сервер
-  postCards() {
-    this._newCards.forEach(card => {
-      return this.postNewCard(card);
-    });
   }
 }
 export const api = new Api(optionsApi);

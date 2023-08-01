@@ -65,15 +65,16 @@ function App() {
   //Функция проверки корректности токена
   async function checkToken() {
     try {
-      const jwt = localStorage.getItem('jwt');
-      const response = await apiAuthentication.getUserInfo(jwt);
+      //const jwt = localStorage.getItem('jwt');
+      const response = await apiAuthentication.getUserInfo();
       if (!response) {
         return;
       }
+      console.log(response._id);
       setIsLoggedIn(true);
-      setEmail(response.data.email);
-      console.log(response.data.email);
+      setEmail(response.email);
     } catch (error) {
+      setIsLoggedIn(false);
       console.error(`Ошибка при проверки корректности токена: ${error}`);
     } finally {
       console.info('Проверки корректности токена-завершено');
@@ -88,9 +89,10 @@ function App() {
     navigate('/main');
   }, [isLoggedIn]);
   //Функция выйти из аккаунта - удалить токен из локального хранилища,обновить стейт IsLoggedIn, перейти на страницу входа
-  function handleExit() {
+  async function handleExit() {
+    await apiAuthentication.getUserOut();
     setIsLoggedIn(false);
-    localStorage.removeItem('jwt');
+    //localStorage.removeItem('jwt');
     navigate('/sign-in');
   }
   //Функция открыть popupFullImg.
@@ -163,9 +165,8 @@ function App() {
   async function handleCardLike(card) {
     try {
       // Снова проверяем, есть ли уже лайк на этой карточке
-      const isLiked = card.likes.some(like => like._id === currentUser._id);
+      const isLiked = card.likes.some(like => like === currentUser._id);
       const response = await api.changeLikeCardStatus(card._id, !isLiked);
-      //console.log(response);
       setCards(state =>
         state.map(stateCard => (stateCard._id === card._id ? response : stateCard))
       );
@@ -254,7 +255,7 @@ function App() {
     try {
       const response = await apiAuthentication.postLoginUser(account);
       setIsFailRegistration(false);
-      localStorage.setItem('jwt', response.token);
+      // localStorage.setItem('jwt', response.token);
       setIsLoggedIn(true);
       setEmail(account.email);
     } catch (error) {
@@ -286,7 +287,7 @@ function App() {
       <Header email={email} onExit={handleExit} />
       <Routes>
         <Route
-          path="/main"
+          path='/main'
           element={
             <ProtectedRoute
               isLoggedIn={isLoggedIn}
@@ -304,11 +305,11 @@ function App() {
             />
           }
         />
-        <Route path="/sign-in" element={<Login onSubmit={handleSubmitLogin} />} />
-        <Route path="/sign-up" element={<Register onSubmit={handleSubmitRegistration} />} />
+        <Route path='/sign-in' element={<Login onSubmit={handleSubmitLogin} />} />
+        <Route path='/sign-up' element={<Register onSubmit={handleSubmitRegistration} />} />
         <Route
-          path="/"
-          element={isLoggedIn ? <Navigate to="/main" /> : <Navigate to="/sign-in" />}
+          path='/'
+          element={isLoggedIn ? <Navigate to='/main' /> : <Navigate to='/sign-in' />}
         />
       </Routes>
       <Footer />
@@ -339,8 +340,8 @@ function App() {
       />
       {/* === Popup подтверждения удаления карточки ===*/}
       <PopupWithForm
-        namePopup="popupConfirm"
-        popupTitle="Вы уверены?"
+        namePopup='popupConfirm'
+        popupTitle='Вы уверены?'
         textSubmitButton={isLoad ? 'Удаление...' : 'Да'}
         isOpen={isConfirmPopupOpen}
         onClose={closeAllPopups}
@@ -354,7 +355,7 @@ function App() {
         handleOverlayPopupClick={closePopupOnOverlayClick}
       />
       <InfoTooltip
-        namePopup="popupRegistration"
+        namePopup='popupRegistration'
         isOpen={isRegistrationPopupOpen}
         onClose={closeAllPopups}
         handleOverlayPopupClick={closePopupOnOverlayClick}

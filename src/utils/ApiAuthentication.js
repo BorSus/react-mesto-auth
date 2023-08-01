@@ -4,6 +4,7 @@ class ApiAuthentication {
     this._baseUrl = options.baseUrl;
     this._urlSignup = options.urlSignup;
     this._urlSignin = options.urlSignin;
+    this._urlSignout = options.urlSignout;
     this._urlAuthorise = options.urlAuthorise;
   }
   //Проверка ответа сервера и преобразование из json
@@ -20,17 +21,13 @@ class ApiAuthentication {
       headers: {
         'Content-Type': 'application/json'
       },
+      credentials: 'include',
       body: JSON.stringify({
         password: data.password,
         email: data.email
       })
     });
     return this._getResponseData(response);
-    /*  Успешный ответ пример:
-    "data": {
-        "_id": "5f5204c577488bcaa8b7bdf2",,
-        "email": "email@yandex.ru"
-    } */
   }
   //Вход пользователя
   async postLoginUser(data) {
@@ -39,33 +36,33 @@ class ApiAuthentication {
       headers: {
         'Content-Type': 'application/json'
       },
+      credentials: 'include',
       body: JSON.stringify({
         password: data.password,
         email: data.email
       })
     });
     return this._getResponseData(response);
-    /* Успешный ответ пример:
-    {
-    "token" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZjUxNDhlNWJiODhmZGNhOTIxYjZhYzciLCJpYXQiOjE1OTkyMTExNzN9.Q3DVLh7t0f0BjyG9gh3UlUREYQxl2chdGTGy701lF6I"
-    } 
-    */
   }
   //Проверки валидности токена и получения email
-  async getUserInfo(JWT) {
+  async getUserInfo() {
     const response = await fetch(`${this._baseUrl}${this._urlAuthorise}`, {
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${JWT}`
-      }
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include'
     });
     return this._getResponseData(response);
-    /* Успешный ответ пример:
-    {
-    "_id":"1f525cf06e02630312f3fed7",
-    "email":"email@email.ru"
-    } 
-    */
+  }
+  // выход пользователя, очитска JWT из cookies
+  async getUserOut() {
+    const response = await fetch(`${this._baseUrl}${this._urlSignout}`, {
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include'
+    });
+    return this._getResponseData(response);
   }
 }
 export const apiAuthentication = new ApiAuthentication(optionsApiAuthentication);

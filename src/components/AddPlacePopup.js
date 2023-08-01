@@ -27,51 +27,46 @@ function AddPlacePopup({ isOpen, onClose, onAddPlace, isLoad, handleOverlayPopup
       name,
       link
     });
-    /*
-    //сброс cтейтов, после подтверждения отпраки на сервер 
-    setName('');//в котором содержится значение inputPlacename
-    setLink('');//в котором содержится значение inputImageLink
-    */
   }
   return (
     <PopupWithForm
-      namePopup="popupPlace"
-      popupTitle="Новое место"
+      namePopup='popupPlace'
+      popupTitle='Новое место'
       textSubmitButton={isLoad ? 'Сохранение...' : 'Создать'}
       isOpen={isOpen}
       onClose={onClose}
       onSubmit={handleSubmit}
       onHandleOverlayPopupClick={handleOverlayPopupClick}
     >
-      <div className="popup__valid-input">
+      <div className='popup__valid-input'>
         <input
-          type="text"
-          className="popup__input-text"
-          name="name"
-          id="inputPlacename"
-          placeholder="Название"
-          minLength="2"
-          maxLength="30"
+          type='text'
+          className='popup__input-text'
+          name='name'
+          id='inputPlacename'
+          placeholder='Название'
+          minLength='2'
+          maxLength='30'
           value={name}
           onChange={handleChangeName}
           required
         />
-        <span className="popup__error" id="inputPlacename-error">
+        <span className='popup__error' id='inputPlacename-error'>
           &nbsp
         </span>
       </div>
-      <div className="popup__valid-input">
+      <div className='popup__valid-input'>
         <input
-          type="url"
-          className="popup__input-text"
-          name="link"
-          id="inputImageLink"
-          placeholder="Ссылка на картинку"
+          type='url'
+          className='popup__input-text'
+          name='link'
+          id='inputImageLink'
+          placeholder='Ссылка на картинку'
           value={link}
           onChange={handleChangeLink}
           required
         />
-        <span className="popup__error" id="inputImageLink-error">
+        <span className='popup__error' id='inputImageLink-error'>
           &nbsp
         </span>
       </div>

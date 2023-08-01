@@ -7,11 +7,11 @@ function EntryForm({ title, textSubmitButton, textLink, onSubmit }) {
   const [email, setEmail] = useState('');
   //переменная состояния = cтейт, в котором содержится значение inputEntryPassword
   const [password, setPassword] = useState('');
-  // Обработчик изменения инпута обновляет стейт name
+  // Обработчик изменения инпута обновляет стейт email
   function handleChangeEmail(e) {
     setEmail(e.target.value);
   }
-  // Обработчик изменения инпута обновляет стейт description
+  // Обработчик изменения инпута обновляет стейт password
   function handleChangePassword(e) {
     setPassword(e.target.value);
   }
